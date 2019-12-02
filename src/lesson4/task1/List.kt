@@ -236,7 +236,25 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var listRom: List<String> = listOf("I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M")
+    var listLat: List<Int> = listOf(1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
+    var res: MutableList<String> = mutableListOf()
+
+    var i = listLat.size - 1
+    var tmp = n
+
+    while (tmp != 0) {
+        while (tmp >= listLat[i]) {
+            tmp -= listLat[i]
+            res.add(listRom[i])
+        }
+
+        i--
+    }
+
+    return res.joinToString(separator = "")
+}
 
 /**
  * Очень сложная
@@ -246,3 +264,9 @@ fun roman(n: Int): String = TODO()
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String = TODO()
+
+fun main() {
+    println(roman(23))
+    println(roman(44))
+    println(roman(101))
+}
