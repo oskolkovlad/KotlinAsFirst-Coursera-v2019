@@ -2,6 +2,10 @@
 
 package lesson6.task1
 
+import java.lang.Exception
+
+//import com.sun.org.apache.xalan.internal.xsltc.dom.SimpleResultTreeImpl
+
 /**
  * Пример
  *
@@ -42,20 +46,20 @@ fun timeSecondsToStr(seconds: Int): String {
 /**
  * Пример: консольный ввод
  */
-fun main() {
-    println("Введите время в формате ЧЧ:ММ:СС")
-    val line = readLine()
-    if (line != null) {
-        val seconds = timeStrToSeconds(line)
-        if (seconds == -1) {
-            println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-        } else {
-            println("Прошло секунд с начала суток: $seconds")
-        }
-    } else {
-        println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
-    }
-}
+//fun main() {
+//    println("Введите время в формате ЧЧ:ММ:СС")
+//    val line = readLine()
+//    if (line != null) {
+//        val seconds = timeStrToSeconds(line)
+//        if (seconds == -1) {
+//            println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
+//        } else {
+//            println("Прошло секунд с начала суток: $seconds")
+//        }
+//    } else {
+//        println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
+//    }
+//}
 
 
 /**
@@ -138,17 +142,6 @@ fun plusMinus(expression: String): Int = TODO()
 /**
  * Сложная
  *
- * Строка состоит из набора слов, отделённых друг от друга одним пробелом.
- * Определить, имеются ли в строке повторяющиеся слова, идущие друг за другом.
- * Слова, отличающиеся только регистром, считать совпадающими.
- * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
- * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
- */
-fun firstDuplicateIndex(str: String): Int = TODO()
-
-/**
- * Сложная
- *
  * Строка содержит названия товаров и цены на них в формате вида
  * "Хлеб 39.9; Молоко 62; Курица 184.0; Конфеты 89.9".
  * То есть, название товара отделено от цены пробелом,
@@ -158,6 +151,50 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String = TODO()
+
+
+/**
+ * Сложная
+ *
+ * Строка состоит из набора слов, отделённых друг от друга одним пробелом.
+ * Определить, имеются ли в строке повторяющиеся слова, идущие друг за другом.
+ * Слова, отличающиеся только регистром, считать совпадающими.
+ * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
+ * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
+ */
+fun firstDuplicateIndex(str: String): Int {
+    val words = str.split(" ")
+    var tmp = words[0]
+    var count = 0
+
+    if (words.size == 1) return -1
+    else if (words[0].toLowerCase() == words[1].toLowerCase()) return 0
+    else {
+        try {
+            for (i in words.indices) {
+                if (i == 0) continue
+                else {
+                    if (tmp.toLowerCase() != words[i].toLowerCase()) {
+                        count += tmp.length + 1
+                        tmp = words[i]
+                    } else return count
+                }
+            }
+
+            return -1
+
+        } catch (e: Exception) {
+            println(e)
+            return -1
+        }
+    }
+}
+
+fun main() {
+    println(firstDuplicateIndex("a v a a"))
+//    println(firstDuplicateIndex("Он пошёл в В школу"))
+}
+
 
 /**
  * Сложная
@@ -171,6 +208,7 @@ fun mostExpensive(description: String): String = TODO()
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int = TODO()
+
 
 /**
  * Очень сложная
