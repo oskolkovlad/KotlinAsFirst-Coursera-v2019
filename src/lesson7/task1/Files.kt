@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import  java.util.Stack
 
 /**
  * Пример
@@ -53,7 +54,35 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val inputText = File(inputName).readText()
+
+    var startIndex: Int
+    var countOfInclude: Int
+    var index: Int
+
+    val acMassive = mutableMapOf<String, Int>()
+
+    for (substring in substrings) {
+        startIndex = 0
+        countOfInclude = 0
+        index = 0
+
+        while (index != -1) {
+            index = inputText.indexOf(substring, startIndex, true)
+
+            if (index >= 0) {
+                startIndex = index + 1
+                countOfInclude++
+            } else index = -1
+        }
+
+        acMassive[substring] = countOfInclude
+    }
+
+    return acMassive
+}
 
 
 /**
@@ -69,8 +98,71 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  * Исключения (жюри, брошюра, парашют) в рамках данного задания обрабатывать не нужно
  *
  */
+
+fun main() {
+//    markdownToHtmlSimple("input/markdown_simple.md", "output.html")
+//    markdownToHtmlSimple("input/markdown_simple1.md", "output.html")
+//    markdownToHtmlSimple("input/markdown_simple2.md", "output.html")
+
+//    File("output.html").delete()
+
+    println(countSubstrings("input/substrings_in1.txt", listOf("РАЗНЫЕ", "ные", "Неряшливость", "е", "эволюция")))
+
+    //assertEquals(
+//mapOf("РАЗНЫЕ" to 2, "ные" to 2, "Неряшливость" to 1, "е" to 49, "эволюция" to 0),
+//countSubstrings("input/substrings_in1.txt", listOf("РАЗНЫЕ", "ные", "Неряшливость", "е", "эволюция"))
+//)
+//assertEquals(
+//mapOf("Карминовый" to 2, "Некрасивый" to 2, "белоглазый" to 1),
+//countSubstrings("input/substrings_in1.txt", listOf("Карминовый", "Некрасивый", "белоглазый"))
+//)
+//assertEquals(
+//mapOf("--" to 4, "ее" to 2, "животное" to 2, "." to 2),
+//countSubstrings("input/substrings_in2.txt", listOf("--", "ее", "животное", "."))
+//)
+
+//    sibilants("input/sibilants_in1.txt", "temp.txt")
+//    assertFileContent(
+//        "temp.txt",
+//        """/**
+// * Простая
+// *
+// * В русском языке, как правило, после букв Ж, Ч, Ш, Щ пишется И, А, У, а не Ы, Я, Ю.
+// * Во входном файле с именем inputName содержится некоторый текст.
+// * Проверить текст во входном файле на соблюдение данного правила и вывести в выходной
+// * файл outputName текст с исправленными ошибками.
+// *
+// * Регистр заменённых букв следует сохранять.
+// *
+// * Исключения (жУри, броШУра, параШут) в рамках данного задания обрабатывать не нужно
+// *
+// * жИ шИ ЖИ Ши ЖА шА Жа ша жу шу жу щу ча шу щу ща жа жи жи жу чу ча
+// */"""
+//    )
+}
+
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val inputText = File(inputName).readText()
+    val outputStream = File(outputName).bufferedWriter()
+
+    var tempText: String = inputText
+
+    val firstLetters = setOf("ж", "Ж", "ч", "Ч", "ш", "Ш", "щ", "Щ")
+    val correctLetters = mapOf(
+        "ы" to "и",
+        "Ы" to "И",
+        "я" to "а",
+        "Я" to "А",
+        "ю" to "у",
+        "Ю" to "У"
+    )
+
+    for (firstLetter in firstLetters)
+        for ((incorrectLetter, correctLetter) in correctLetters)
+            tempText = tempText.replace(firstLetter + incorrectLetter, firstLetter + correctLetter)
+
+    outputStream.write(tempText)
+    outputStream.close()
 }
 
 /**
@@ -91,37 +183,6 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
-}
-
-/**
- * Сложная
- *
- * Во входном файле с именем inputName содержится некоторый текст (в том числе, и на русском языке).
- * Вывести его в выходной файл с именем outputName, выровняв по левому и правому краю относительно
- * самой длинной строки.
- * Выравнивание производить, вставляя дополнительные пробелы между словами: равномерно по всей строке
- *
- * Слова внутри строки отделяются друг от друга одним или более пробелом.
- *
- * Следующие правила должны быть выполнены:
- * 1) Каждая строка входного и выходного файла не должна начинаться или заканчиваться пробелом.
- * 2) Пустые строки или строки из пробелов трансформируются в пустые строки без пробелов.
- * 3) Строки из одного слова выводятся без пробелов.
- * 4) Число строк в выходном файле должно быть равно числу строк во входном (в т. ч. пустых).
- *
- * Равномерность определяется следующими формальными правилами:
- * 5) Число пробелов между каждыми двумя парами соседних слов не должно отличаться более, чем на 1.
- * 6) Число пробелов между более левой парой соседних слов должно быть больше или равно числу пробелов
- *    между более правой парой соседних слов.
- *
- * Следует учесть, что входной файл может содержать последовательности из нескольких пробелов  между слвоами. Такие
- * последовательности следует учитывать при выравнивании и при необходимости избавляться от лишних пробелов.
- * Из этого следуют следующие правила:
- * 7) В самой длинной строке каждая пара соседних слов должна быть отделена В ТОЧНОСТИ одним пробелом
- * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
- */
-fun alignFileByWidth(inputName: String, outputName: String) {
     TODO()
 }
 
@@ -212,6 +273,14 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     TODO()
 }
 
+//fun main() {
+////    markdownToHtmlSimple("input/markdown_simple.md", "output.html")
+////    markdownToHtmlSimple("input/markdown_simple1.md", "output.html")
+//    markdownToHtmlSimple("input/markdown_simple2.md", "output.html")
+//
+////    File("output.html").delete()
+//}
+
 /**
  * Сложная
  *
@@ -244,22 +313,321 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  *
  * Соответствующий выходной файл:
 <html>
-    <body>
-        <p>
-            Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
-            Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
-        </p>
-        <p>
-            Suspendisse <s>et elit in enim tempus iaculis</s>.
-        </p>
-    </body>
+<body>
+<p>
+Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
+Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
+</p>
+<p>
+Suspendisse <s>et elit in enim tempus iaculis</s>.
+</p>
+</body>
 </html>
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
+
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val outputStream = File(outputName).bufferedWriter()
+    val stackOfTags = Stack<String>()
+    val stackForHistory = Stack<String>()
+
+    var pChar = ' '
+    var ppChar = ' '
+
+//    val s = "~~"
+//    val i = "*"
+//    val b = "**"
+//    val bi = "***"
+
+    var flagOfEmptyLine = false
+    var flagFour = false
+    var countSave = 0
+    var countOfEmptyLines = 0
+
+    outputStream.write("<html>\n<body>\n<p>")
+
+    for (line in File(inputName).readLines()) {
+//        println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        if (line.isEmpty()) {
+            flagOfEmptyLine = true
+            countOfEmptyLines++
+        }
+
+        if (!line.contains(Regex("""^*~~*""")) && !line.contains(Regex("""^*\**"""))) outputStream.write(line)
+
+        for (charInline in line) {
+            countSave++
+            if (charInline == '~' && pChar == '~') {
+                if (stackOfTags.isNotEmpty() && (stackOfTags.peek() == "<s>" || stackOfTags.contains("<s>"))) {
+//                    println("=================</s>==========================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+
+                    if (stackOfTags.peek() == "<s>") {
+                        stackOfTags.pop()
+                        outputStream.write("</s")
+                    } else {
+                        while (true) {
+                            if (stackOfTags.peek() == "<b>") {
+                                stackOfTags.pop()
+                                stackForHistory.push("<b>")
+                                outputStream.write("</b>")
+                            } else if (stackOfTags.peek() == "<i>") {
+                                stackOfTags.pop()
+                                stackForHistory.push("<i>")
+                                outputStream.write("</i>")
+                            } else if (stackOfTags.peek() == "<s>") {
+                                stackOfTags.pop()
+                                outputStream.write("</s>")
+                                break
+                            }
+                        }
+
+                        while (stackForHistory.isNotEmpty()) {
+                            outputStream.write(stackForHistory.peek())
+                            if (stackForHistory.size == 1) stackOfTags.push(stackForHistory.peek())
+                            stackForHistory.pop()
+                        }
+                    }
+
+                    continue
+                } else {
+                    if (ppChar == '漽') {
+                        outputStream.write(pChar.toInt())
+                        continue
+                    }
+
+//                    println("=======================<s>=================================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+
+                    stackOfTags.push("<s>")
+                    outputStream.write(stackOfTags.peek())
+
+                    continue
+                }
+            }
+
+            if (charInline == '*' && pChar == '儓' && ppChar == '%') flagFour = true
+
+            if ((charInline == '*' && pChar == '*' && ppChar != '*') /*|| flagFour*/) {
+                if (stackOfTags.isNotEmpty() && (stackOfTags.peek() == "<b>" || stackOfTags.contains("<b>"))) {
+//                    println("========================</b>====================================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    /*if (flagFour) {
+                        flagFour = false
+
+                        ppChar = pChar
+                        pChar = charInline
+
+                    }*/
+
+                    ppChar = pChar
+                    pChar = charInline
+
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+//                    println(stackOfTags.peek())
+
+                    if (stackOfTags.peek() == "<b>") {
+                        stackOfTags.pop()
+                        outputStream.write("</b>")
+                    } else {
+                        while (true) {
+                            if (stackOfTags.peek() == "<s>") {
+                                stackOfTags.pop()
+                                stackForHistory.push("<s>")
+                                outputStream.write("</s>")
+                            } else if (stackOfTags.peek() == "<i>") {
+                                stackOfTags.pop()
+                                stackForHistory.push("<i>")
+                                outputStream.write("</i>")
+                            } else if (stackOfTags.peek() == "<b>") {
+                                stackOfTags.pop()
+                                outputStream.write("</b>")
+                                break
+                            }
+                        }
+
+                        while (stackForHistory.isNotEmpty()) {
+                            outputStream.write(stackForHistory.peek())
+                            if (stackForHistory.size == 1) stackOfTags.push(stackForHistory.peek())
+                            stackForHistory.pop()
+                        }
+                    }
+
+                    continue
+                } else {
+                    if (charInline == '*' && pChar == '*' && ppChar == ';') {
+                        outputStream.write(pChar.toInt())
+                        outputStream.write(pChar.toInt())
+                        ppChar = pChar
+                        pChar = charInline
+                        continue
+                    }
+
+//                    println("=======================<b>================================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+//                    if (stackOfTags.isNotEmpty()) println(stackOfTags.peek())
+                    stackOfTags.push("<b>")
+//                    println(stackOfTags.peek())
+                    outputStream.write(stackOfTags.peek())
+
+                    continue
+                }
+            }
+
+            if (charInline == '*' && pChar == '*' && ppChar == '*') {
+                if (stackOfTags.isNotEmpty() && stackOfTags.peek() == "<b>") {
+//                    println("=======================<i>=================================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+
+//                    if (flagFour) continue
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+
+                    stackOfTags.push("<i>")
+                    outputStream.write(stackOfTags.peek())
+
+                    continue
+                } else {
+                    if (stackOfTags.isNotEmpty() && stackOfTags.peek() == "<i>") {
+//                        println("=========================</i>================================")
+                        stackOfTags.pop()
+                        outputStream.write("</i>")
+                    }
+
+                    if (stackOfTags.isNotEmpty() && stackOfTags.peek() == "<b>") {
+//                        println("============================</b>=============================")
+                        stackOfTags.pop()
+                        outputStream.write("</b>")
+                    }
+
+//                    println("====================<b><i> смена pChar и ppChar=============================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+
+                    continue
+                }
+            }
+
+            if (charInline != '*' && pChar == '*' && ppChar != '*') {
+                if (stackOfTags.isNotEmpty() && (stackOfTags.peek() == "<i>" || stackOfTags.contains("<i>"))) {
+//                    println("=============================</i>====================================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+//                    println(stackOfTags.peek())
+
+                    if (stackOfTags.peek() == "<i>") {
+                        stackOfTags.pop()
+                        outputStream.write("</i>")
+                    } else {
+                        while (true) {
+                            if (stackOfTags.peek() == "<s>") {
+                                stackOfTags.pop()
+                                stackForHistory.push("<s>")
+                                outputStream.write("</s>")
+                            } else if (stackOfTags.peek() == "<b>") {
+                                stackOfTags.pop()
+                                stackForHistory.push("<b>")
+                                outputStream.write("</b>")
+                            } else if (stackOfTags.peek() == "<i>") {
+                                stackOfTags.pop()
+                                outputStream.write("</i>")
+                                break
+                            }
+                        }
+
+                        while (stackForHistory.isNotEmpty()) {
+                            outputStream.write(stackForHistory.peek())
+                            if (stackForHistory.size == 1) stackOfTags.push(stackForHistory.peek())
+                            stackForHistory.pop()
+                        }
+                    }
+
+                    continue
+                } else {
+                    if (charInline == '?' && pChar == '*' && ppChar == '4') {
+                        outputStream.write(pChar.toInt())
+                        ppChar = pChar
+                        pChar = charInline
+                        continue
+                    }
+
+//                    println("=========================<i>=====================================")
+//                    println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                    ppChar = pChar
+                    pChar = charInline
+//                    println ("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                    println("=========================================================================")
+//                    println(stackOfTags.peek())
+                    stackOfTags.push("<i>")
+//                    println(stackOfTags.peek())
+                    outputStream.write(stackOfTags.peek())
+
+                    continue
+                }
+            }
+
+            if (pChar == '*' || (pChar == '~' && ppChar == '~')) {
+//                println("=========================pChar == '*' || pChar == '~'================================")
+//                println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+                ppChar = pChar
+                pChar = charInline
+//                println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//                println("=========================================================================")
+
+                continue
+            }
+
+//            println("outputStream.write(pChar.toInt()) = ${pChar.toInt()}")
+            outputStream.write(pChar.toInt())
+
+            if (flagOfEmptyLine && countOfEmptyLines in 1..2) {
+                outputStream.write("</p>\n<p>")
+//                println("=============EEEMMMPPPTTTYYY=======================")
+                flagOfEmptyLine = false
+            } else if (flagOfEmptyLine && countOfEmptyLines > 2) {
+                outputStream.write("</p>\n<p></p>\n<p>")
+//                println("=============EEEMMMPPPTTTYYY=======================")
+                flagOfEmptyLine = false
+            } else countOfEmptyLines = 0
+
+//            println("=============END=======================")
+//            println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+            ppChar = pChar
+            pChar = charInline
+//            println("charInline = $charInline | pChar = $pChar | ppChar = $ppChar")
+//            println("=========================================================================")
+        }
+    }
+
+//    println("outputStream.write(pChar.toInt()) = ${pChar.toInt()}")
+    outputStream.write(pChar.toInt())
+
+    outputStream.write("</p>\n</body>\n</html>")
+    outputStream.close()
 }
+
 
 /**
  * Сложная
@@ -295,67 +663,67 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  *
  * Пример входного файла:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
-* Утка по-пекински
-    * Утка
-    * Соус
-* Салат Оливье
-    1. Мясо
-        * Или колбаса
-    2. Майонез
-    3. Картофель
-    4. Что-то там ещё
-* Помидоры
-* Фрукты
-    1. Бананы
-    23. Яблоки
-        1. Красные
-        2. Зелёные
+ * Утка по-пекински
+ * Утка
+ * Соус
+ * Салат Оливье
+1. Мясо
+ * Или колбаса
+2. Майонез
+3. Картофель
+4. Что-то там ещё
+ * Помидоры
+ * Фрукты
+1. Бананы
+23. Яблоки
+1. Красные
+2. Зелёные
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  *
  *
  * Соответствующий выходной файл:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
 <html>
-  <body>
-    <ul>
-      <li>
-        Утка по-пекински
-        <ul>
-          <li>Утка</li>
-          <li>Соус</li>
-        </ul>
-      </li>
-      <li>
-        Салат Оливье
-        <ol>
-          <li>Мясо
-            <ul>
-              <li>
-                  Или колбаса
-              </li>
-            </ul>
-          </li>
-          <li>Майонез</li>
-          <li>Картофель</li>
-          <li>Что-то там ещё</li>
-        </ol>
-      </li>
-      <li>Помидоры</li>
-      <li>
-        Фрукты
-        <ol>
-          <li>Бананы</li>
-          <li>
-            Яблоки
-            <ol>
-              <li>Красные</li>
-              <li>Зелёные</li>
-            </ol>
-          </li>
-        </ol>
-      </li>
-    </ul>
-  </body>
+<body>
+<ul>
+<li>
+Утка по-пекински
+<ul>
+<li>Утка</li>
+<li>Соус</li>
+</ul>
+</li>
+<li>
+Салат Оливье
+<ol>
+<li>Мясо
+<ul>
+<li>
+Или колбаса
+</li>
+</ul>
+</li>
+<li>Майонез</li>
+<li>Картофель</li>
+<li>Что-то там ещё</li>
+</ol>
+</li>
+<li>Помидоры</li>
+<li>
+Фрукты
+<ol>
+<li>Бананы</li>
+<li>
+Яблоки
+<ol>
+<li>Красные</li>
+<li>Зелёные</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+</body>
 </html>
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
@@ -382,23 +750,23 @@ fun markdownToHtml(inputName: String, outputName: String) {
  * Вывести в выходной файл процесс умножения столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 111):
-   19935
-*    111
+19935
+ *    111
 --------
-   19935
+19935
 + 19935
 +19935
 --------
- 2212785
+2212785
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  * Нули в множителе обрабатывать так же, как и остальные цифры:
-  235
-*  10
+235
+ *  10
 -----
-    0
+0
 +235
 -----
- 2350
+2350
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
@@ -412,16 +780,16 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Вывести в выходной файл процесс деления столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 22):
-  19935 | 22
- -198     906
- ----
-    13
-    -0
-    --
-    135
-   -132
-   ----
-      3
+19935 | 22
+-198     906
+----
+13
+-0
+--
+135
+-132
+----
+3
 
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
@@ -430,3 +798,56 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     TODO()
 }
 
+/**
+ * Сложная
+ *
+ * Во входном файле с именем inputName содержится некоторый текст (в том числе, и на русском языке).
+ * Вывести его в выходной файл с именем outputName, выровняв по левому и правому краю относительно
+ * самой длинной строки.
+ * Выравнивание производить, вставляя дополнительные пробелы между словами: равномерно по всей строке
+ *
+ * Слова внутри строки отделяются друг от друга одним или более пробелом.
+ *
+ * Следующие правила должны быть выполнены:
+ * 1) Каждая строка входного и выходного файла не должна начинаться или заканчиваться пробелом.
+ * 2) Пустые строки или строки из пробелов трансформируются в пустые строки без пробелов.
+ * 3) Строки из одного слова выводятся без пробелов.
+ * 4) Число строк в выходном файле должно быть равно числу строк во входном (в т. ч. пустых).
+ *
+ * Равномерность определяется следующими формальными правилами:
+ * 5) Число пробелов между каждыми двумя парами соседних слов не должно отличаться более, чем на 1.
+ * 6) Число пробелов между более левой парой соседних слов должно быть больше или равно числу пробелов
+ *    между более правой парой соседних слов.
+ *
+ * Следует учесть, что входной файл может содержать последовательности из нескольких пробелов  между слвоами. Такие
+ * последовательности следует учитывать при выравнивании и при необходимости избавляться от лишних пробелов.
+ * Из этого следуют следующие правила:
+ * 7) В самой длинной строке каждая пара соседних слов должна быть отделена В ТОЧНОСТИ одним пробелом
+ * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
+ */
+fun alignFileByWidth(inputName: String, outputName: String) {
+    TODO()
+//    val outputStream = File(outputName).bufferedWriter()
+//    var currentLineLength = 0
+//
+//    var countInLine = mutableMapOf<Int, Int>()
+//    var count = 0
+//    var key = 0
+//    var wordsList = mutableListOf<String>()
+//    var lineStr = ""
+//
+//
+//    for (line in File(inputName).readLines()) {
+//
+//        //***//
+//        wordsList = line.split(" ").toMutableList()
+//        for (i in 0 until wordsList.size)
+//            wordsList[i] = wordsList[i].replace(" ", "")
+//        lineStr = wordsList.joinToString(" ")
+//        //***//
+//
+//        count = lineStr.length
+//        countInLine[key] = count
+//        key++
+//    }
+}
